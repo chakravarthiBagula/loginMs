@@ -5,7 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Data
 @Entity
 @Table
 public class Login {
@@ -13,8 +12,8 @@ public class Login {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer  id;
-    @Column
+    @Column(nullable = false)
     private String username;
-    @Column
+    @Column(nullable = false)
     private String password;
 }
