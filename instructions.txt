@@ -1,0 +1,8 @@
+To run the application.
+
+  1) Download the Zip File and Extract It in your system.
+  2) Open the project with IntelliJ or Eclipse.
+  3) Run the application
+  4) Goto localhost:8080/ and boom.
+  5) To access the data base  go to localhost:8080/h2-console/ and enter password : pa (You can set your own password in application.properties)
+  6) There you can perform some crud operations manually.
