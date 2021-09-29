@@ -1,17 +1,20 @@
 package com.hexaview.loginMs.controller;
-
-
 import com.hexaview.loginMs.request.LoginVO;
+import com.hexaview.loginMs.request.StudentInfoListVO;
+import com.hexaview.loginMs.request.StudentInfoVO;
 import com.hexaview.loginMs.service.LoginService;
 import com.hexaview.loginMs.service.RegisterService;
+import com.hexaview.loginMs.service.StudentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
-
+@Slf4j
 @Controller
 public class LoginController {
     @Autowired
@@ -20,22 +23,28 @@ public class LoginController {
     @Autowired
     RegisterService registerService;
 
+    @Autowired
+    StudentService studentService;
+
     @GetMapping("/")
     public String index(Model model) {
         return "home.jsp";
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @PostMapping(value = "/login")
     public String login(LoginVO loginVO, Model model) {
-        String token = loginService.match(loginVO);
+        String token = loginService.validate(loginVO);
 
         if (token.equalsIgnoreCase("userNotFoundException")) {
             model.addAttribute("error", "INVALID USERNAME");
+            log.error("Username doesn't exist");
         } else if (token.equalsIgnoreCase("PasswordMismatchException")) {
+            log.error("password mismatched");
             model.addAttribute("error", "INVALID PASSWORD");
         } else {
             model.addAttribute("username", loginVO.getUsername());
             model.addAttribute("token", token);
+            log.info("Login Successful..Redirecting to home page");
             return "disp.jsp";
         }
         return "home.jsp";
@@ -46,42 +55,34 @@ public class LoginController {
         return "register.jsp";
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @PostMapping(value = "/register")
     public String register(LoginVO loginVO, Model model) {
+        log.info("Request For User Registration ");
         boolean success = registerService.register(loginVO);
         if (success) {
             model.addAttribute("msg", "Successfully Registered");
         } else {
             model.addAttribute("error", "User already Registered");
         }
-        return "register.jsp";
+        log.info("User registered Succesfully.. Redirecting to login page");
+        return "home.jsp";
     }
+
+    @GetMapping(value = "/allstudents")
+    public ModelAndView getAllStudents(){
+        ModelAndView mvc = new ModelAndView("displayTable.jsp");
+        StudentInfoListVO studentInfoListVO = studentService.getAllStudents();
+        mvc.addObject("StudentList", studentInfoListVO);
+        return mvc;
+    }
+
+    @GetMapping(value = "/student/")
+    public ModelAndView getStudent(Integer studentId){
+        ModelAndView mvc = new ModelAndView("displayTable.jsp");
+        StudentInfoListVO studentInfoListVO = studentService.getStudentByID(studentId);
+        mvc.addObject("StudentList", studentInfoListVO);
+        return mvc;
+    }
+
 
 }
-
-/*
-*
-*  @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<String> hello(LoginVO loginVO, Model model) {
-         String token = loginService.match(loginVO);
-         if(token.equalsIgnoreCase("userNotFoundException")){
-             model.addAttribute("error", "INVALID USERNAME");
-         } else if(token.equalsIgnoreCase("PasswordMismatchException")){
-             model.addAttribute("error", "INVALID PASSWORD");
-         } else {
-             return new ResponseEntity<>("<html>" +
-                     "<head>" +
-                     "</head>" +
-                     "<body>" +
-                     "<pre> " +
-                     "        LOGIN SUCCESSFUL  <br><br>" +
-                     "        YOUR SECURITY TOKEN :<b>" +
-                     token +
-                     "</b></pre>" +
-                     "</body>" +
-                     "<html>", HttpStatus.OK);
-         }
-
-         return ResponseEntity.badRequest().body("home.jsp");
-    }
- */

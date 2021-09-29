@@ -1,14 +1,12 @@
-package com.hexaview.loginMs.dao.repo;
+package com.hexaview.loginMs.request;
 
 import lombok.Data;
 
 @Data
-public class StudentInfoVO {
+public class StudentVO {
     private Integer studentId;
 
     private String studentName;
-
-    private MarksVO marksVO;
 
     private Double average;
 

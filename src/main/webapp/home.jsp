@@ -114,6 +114,7 @@
             <div class="container">
                 <form class="form-signing" method="post" action="login">
                     <h2 class="form-signing-heading">LOGIN</h2>
+                    <h3 style="color : green">${msg}</h3>
                     <h3 style="color : red">${error}</h3>
                     <p>
                         <label for="username" class="sr-only">Username</label>

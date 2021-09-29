@@ -1,9 +1,9 @@
-package com.hexaview.loginMs.dao.repo;
+package com.hexaview.loginMs.request;
 
 import lombok.Data;
 
 @Data
-public class MarksVO {
+class MarksVO {
 
     private int english;
 

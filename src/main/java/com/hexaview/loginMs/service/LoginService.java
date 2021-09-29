@@ -3,15 +3,16 @@ package com.hexaview.loginMs.service;
 import com.hexaview.loginMs.dao.model.Login;
 import com.hexaview.loginMs.dao.repo.LoginRepo;
 import com.hexaview.loginMs.request.LoginVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.List;
 
 
+@Slf4j
 @Component
 public class LoginService {
     @Autowired
@@ -21,20 +22,20 @@ public class LoginService {
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
 
     public static String generateNewToken() {
-        byte[] randomBytes = new byte[24];
+        byte[] randomBytes = new byte[128];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
     }
-    public  String match(LoginVO loginVO){
-        System.out.println("Trying to login using username :" + loginVO.getUsername() + " password :" + loginVO.getPassword());
+    public  String validate(LoginVO loginVO){
+        log.info("Trying to login using username :" + loginVO.getUsername() + " password :" + loginVO.getPassword());
         Login user = loginRepo.findByUsername(loginVO.getUsername()).orElse(null);
         if(user == null){
             return "userNotFoundException";
         }
         if(user.getPassword().equals(loginVO.getPassword())){
-            System.out.println("Login Successful");
+            log.info("Login Successful");
             String token = generateNewToken();
-            System.out.println("\tYour security token :" + token);
+            log.info("\tYour security token :" + token);
             return token;
         }else {
             return "PasswordMismatchException";
